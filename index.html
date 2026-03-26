@@ -1,0 +1,1523 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="color-scheme" content="light" />
+  <title>Invila™ | Integrated Strategic Dashboard</title>
+
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <!-- Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- PDF Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    :root{
+      /* Executive Premium Palette */
+      --canvas: #fafbfc;
+      --surface: #ffffff;
+      --surface-2: #f4f6f8;
+      --surface-elevated: rgba(255,255,255,0.95);
+      
+      /* Primary - Deep Navy with Electric Accent */
+      --primary: #0a2540;
+      --primary-light: #1a3a5c;
+      --accent: #00d4aa;
+      --accent-glow: rgba(0,212,170,0.15);
+      
+      /* Secondary Accents */
+      --indigo: #635bff;
+      --emerald: #00a86b;
+      --rose: #ff6b6b;
+      
+      /* Text Hierarchy */
+      --text: #0a2540;
+      --text-secondary: #425466;
+      --text-muted: #6b7c93;
+      --text-invert: #ffffff;
+      
+      /* Dark Mode Support */
+      --dark: #0a2540;
+      --dark-2: rgba(10,37,64,0.95);
+      --dark-text: #e8ecf1;
+      --dark-muted: #8b9cad;
+      
+      /* Borders & Shadows - Premium Glass Effect */
+      --border: rgba(10,37,64,0.08);
+      --border-strong: rgba(10,37,64,0.15);
+      --shadow-sm: 0 2px 8px rgba(10,37,64,0.04);
+      --shadow-md: 0 8px 24px rgba(10,37,64,0.08);
+      --shadow-lg: 0 24px 64px rgba(10,37,64,0.12);
+      --shadow-xl: 0 48px 100px rgba(10,37,64,0.18);
+      
+      /* Layout */
+      --container: 1400px;
+      --header-height: 88px;
+      --radius-sm: 12px;
+      --radius-md: 20px;
+      --radius-lg: 32px;
+      
+      /* Typography */
+      --font-sans: "Plus Jakarta Sans", Inter, system-ui, -apple-system, sans-serif;
+      --font-display: "Cormorant Garamond", Georgia, serif;
+      --measure: 70ch;
+    }
+
+    *{ box-sizing: border-box; margin: 0; padding: 0; }
+    html, body{ height: 100%; }
+    body{
+      margin: 0;
+      font-family: var(--font-sans);
+      color: var(--text);
+      background: var(--canvas);
+      overflow-x: hidden;
+      line-height: 1.6;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      body{ scroll-behavior: auto; }
+      *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+    }
+
+    /* Skip Link */
+    .skip-link{
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 9999;
+      padding: 14px 20px;
+      background: var(--primary);
+      color: var(--text-invert);
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 13px;
+      text-decoration: none;
+      transform: translateY(-150%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-lg);
+    }
+    .skip-link:focus{ transform: translateY(0); outline: 3px solid var(--accent); outline-offset: 4px; }
+
+    /* ============================
+       EXECUTIVE HEADER DESIGN
+       ============================ */
+    
+    .header{
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      height: var(--header-height);
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .header--scrolled{
+      background: rgba(255,255,255,0.95);
+      box-shadow: var(--shadow-md);
+      height: 72px;
+    }
+
+    .header-container{
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 48px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Brand - Executive Lockup */
+    .brand{
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .brand-mark{
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-mark::before{
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 100%);
+    }
+
+    .brand-mark svg{
+      width: 24px;
+      height: 24px;
+      color: var(--accent);
+    }
+
+    .brand-text{
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name{
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .brand-tagline{
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* Executive Navigation */
+    .nav-desktop{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link{
+      position: relative;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: var(--radius-sm);
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link::after{
+      content: '';
+      position: absolute;
+      bottom: 6px;
+      left: 20px;
+      right: 20px;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 2px;
+    }
+
+    .nav-link:hover{
+      color: var(--primary);
+      background: rgba(10,37,64,0.04);
+    }
+
+    .nav-link:hover::after{
+      transform: scaleX(1);
+    }
+
+    .nav-link--active{
+      color: var(--primary);
+      background: rgba(0,212,170,0.08);
+    }
+
+    .nav-link--active::after{
+      transform: scaleX(1);
+    }
+
+    /* Executive CTA */
+    .header-actions{
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-executive{
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: var(--primary);
+      color: var(--text-invert);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 16px rgba(10,37,64,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-executive::before{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .btn-executive:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(10,37,64,0.3);
+    }
+
+    .btn-executive:hover::before{
+      left: 100%;
+    }
+
+    .btn-executive-secondary{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 24px;
+      background: transparent;
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 600;
+      border: 1.5px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-executive-secondary:hover{
+      border-color: var(--primary);
+      background: rgba(10,37,64,0.04);
+    }
+
+    /* Mobile Toggle - Premium */
+    .nav-toggle{
+      display: none;
+      width: 48px;
+      height: 48px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      transition: all 0.3s ease;
+    }
+
+    .nav-toggle:hover{
+      border-color: var(--primary);
+      background: rgba(10,37,64,0.04);
+    }
+
+    /* Mobile Panel */
+    .nav-panel{
+      display: none;
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      background: var(--surface-elevated);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .nav-panel a{
+      display: block;
+      padding: 16px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-panel a:last-child{ border-bottom: none; }
+
+    .nav-panel a:hover{
+      background: rgba(0,212,170,0.08);
+      color: var(--primary);
+    }
+
+    @media (max-width: 1024px){
+      .header-container{ padding: 0 24px; }
+      .nav-desktop, .header-actions{ display: none; }
+      .nav-toggle{ display: inline-flex; }
+    }
+
+    @media (min-width: 1025px){
+      .nav-panel{ display: none !important; }
+    }
+
+    /* Main Content Offset */
+    main{ padding-top: var(--header-height); }
+
+    /* ============================
+       EXECUTIVE HERO SECTION
+       ============================ */
+
+    .hero{
+      min-height: calc(100vh - var(--header-height));
+      background: linear-gradient(180deg, var(--surface) 0%, var(--canvas) 100%);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Abstract Background Elements */
+    .hero-bg{
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .hero-orb{
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+    }
+
+    .hero-orb-1{
+      width: 600px;
+      height: 600px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--indigo) 100%);
+      top: -200px;
+      right: -100px;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .hero-orb-2{
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+      bottom: -100px;
+      left: -100px;
+      animation: float 25s ease-in-out infinite reverse;
+    }
+
+    @keyframes float{
+      0%, 100%{ transform: translate(0, 0) scale(1); }
+      50%{ transform: translate(30px, -30px) scale(1.05); }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .hero-orb{ animation: none; }
+    }
+
+    .hero-grid{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 80px 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 1024px){
+      .hero-grid{
+        grid-template-columns: 1fr;
+        gap: 48px;
+        padding: 48px 24px;
+      }
+    }
+
+    /* Hero Content */
+    .hero-content{
+      max-width: 640px;
+    }
+
+    .hero-eyebrow{
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      background: rgba(0,212,170,0.1);
+      border: 1px solid rgba(0,212,170,0.2);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 32px;
+    }
+
+    .hero-eyebrow::before{
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse{
+      0%, 100%{ opacity: 1; transform: scale(1); }
+      50%{ opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .hero h1{
+      font-family: var(--font-display);
+      font-size: clamp(48px, 5vw, 72px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--primary);
+      margin-bottom: 24px;
+    }
+
+    .hero h1 em{
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .hero-subtitle{
+      font-size: 20px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+      max-width: 560px;
+    }
+
+    .hero-stats{
+      display: flex;
+      gap: 48px;
+      margin-bottom: 40px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .hero-stat{
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-stat-value{
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .hero-stat-label{
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 8px;
+    }
+
+    .hero-ctas{
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    /* Hero Visual */
+    .hero-visual{
+      position: relative;
+    }
+
+    .hero-card{
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-xl);
+      position: relative;
+    }
+
+    .hero-card::before{
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: var(--radius-lg);
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(0,212,170,0.3) 0%, transparent 50%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .hero-card-header{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .hero-card-title{
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .hero-card-badge{
+      padding: 6px 12px;
+      background: rgba(0,212,170,0.1);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 999px;
+    }
+
+    .hero-metric{
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .hero-metric-value{
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .hero-metric-unit{
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .hero-metric-label{
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .hero-chart{
+      height: 120px;
+      background: linear-gradient(180deg, rgba(0,212,170,0.1) 0%, transparent 100%);
+      border-radius: var(--radius-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-chart::after{
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60%;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--indigo) 100%);
+      opacity: 0.3;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+
+    /* Remaining Sections (preserved from original) */
+    .section{ padding: 96px 0; }
+    .container{ max-width: var(--container); margin: 0 auto; padding: 0 48px; }
+    @media (max-width: 1024px){ .container{ padding: 0 24px; } }
+
+    /* Marquee */
+    .marquee-wrap{
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 0;
+    }
+
+    .marquee-head{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 0 48px;
+    }
+
+    .marquee-title{
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+    }
+
+    .marquee-toggle{
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .marquee-toggle:hover{
+      border-color: var(--primary);
+      background: rgba(10,37,64,0.04);
+    }
+
+    .marquee{
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .marquee-track{
+      display: inline-flex;
+      align-items: center;
+      gap: 48px;
+      width: max-content;
+      animation: marquee-scroll 30s linear infinite;
+      padding: 20px 0;
+    }
+
+    @keyframes marquee-scroll{
+      0%{ transform: translateX(0); }
+      100%{ transform: translateX(-50%); }
+    }
+
+    .logo-pill{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      background: var(--surface-2);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .logo-pill img{
+      height: 32px;
+      width: auto;
+      filter: grayscale(100%);
+      opacity: 0.6;
+      transition: all 0.3s ease;
+    }
+
+    .logo-pill:hover img{
+      filter: grayscale(0%);
+      opacity: 1;
+    }
+
+    /* DNA Section */
+    .dna-head h2{
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .dna-head h3{
+      font-size: clamp(36px, 4vw, 56px);
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .dna-grid{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      margin-top: 64px;
+    }
+
+    @media (max-width: 1024px){
+      .dna-grid{ grid-template-columns: 1fr; gap: 48px; }
+    }
+
+    .feature{
+      display: flex;
+      gap: 20px;
+      padding: 24px;
+      border-radius: var(--radius-md);
+      transition: all 0.3s ease;
+    }
+
+    .feature:hover{
+      background: var(--surface);
+      box-shadow: var(--shadow-md);
+    }
+
+    .feature-icon{
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 100%);
+      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .feature h4{
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .feature p{
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Audit Section */
+    .audit{
+      background: var(--primary);
+      color: var(--dark-text);
+    }
+
+    .audit h3{
+      font-size: clamp(28px, 3vw, 42px);
+      font-weight: 700;
+      color: var(--text-invert);
+      margin-bottom: 16px;
+    }
+
+    .audit h3 span{
+      color: var(--accent);
+      font-weight: 400;
+    }
+
+    /* Portfolio */
+    .portfolio{
+      background: var(--surface-2);
+    }
+
+    .stat-box{
+      background: var(--primary);
+      border-radius: var(--radius-lg);
+      padding: 32px 48px;
+      color: var(--text-invert);
+    }
+
+    .stat-metrics{
+      display: flex;
+      gap: 48px;
+      justify-content: flex-end;
+    }
+
+    .metric .label{
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--dark-muted);
+      margin-bottom: 8px;
+    }
+
+    .metric .val{
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--text-invert);
+    }
+
+    /* Projects Grid */
+    .projects{
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    @media (max-width: 1024px){
+      .projects{ grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px){
+      .projects{ grid-template-columns: 1fr; }
+    }
+
+    .project{
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .project:hover{
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--accent);
+    }
+
+    .badge-mini{
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-mini.zero{ background: var(--indigo); color: white; }
+    .badge-mini.up{ background: rgba(0,212,170,0.1); color: var(--accent); }
+    .badge-mini.new{ background: rgba(99,91,255,0.1); color: var(--indigo); }
+
+    /* Stories */
+    .stories h2{
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .stories h3{
+      font-size: clamp(36px, 4vw, 56px);
+      font-weight: 700;
+      color: var(--primary);
+      text-align: center;
+      line-height: 1.1;
+      margin-bottom: 64px;
+    }
+
+    .story-grid{
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+    }
+
+    @media (max-width: 768px){
+      .story-grid{ grid-template-columns: 1fr; }
+    }
+
+    .story{
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .story video{
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+    }
+
+    .story h5{
+      padding: 24px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Ecosystem */
+    .ecosystem{
+      background: var(--surface-2);
+      border-top: 1px solid var(--border);
+    }
+
+    .logo-wall{
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    @media (max-width: 1024px){
+      .logo-wall{ grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 640px){
+      .logo-wall{ grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* Footer */
+    .footer{
+      background: var(--primary);
+      color: var(--dark-text);
+      padding: 80px 0 40px;
+      text-align: center;
+    }
+
+    .footer .brandline{
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text-invert);
+      margin-bottom: 16px;
+    }
+
+    .footer p{
+      color: var(--dark-muted);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    /* Utilities */
+    .reveal{
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.is-visible{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .reveal{ opacity: 1; transform: none; }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar{ width: 8px; }
+    ::-webkit-scrollbar-track{ background: var(--surface-2); }
+    ::-webkit-scrollbar-thumb{ background: var(--text-muted); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover{ background: var(--primary); }
+
+    section[id]{ scroll-margin-top: 100px; }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============================
+       EXECUTIVE HEADER
+       ============================ -->
+  <header class="header" id="header" role="banner">
+    <div class="header-container">
+      <!-- Brand Lockup -->
+      <a class="brand" href="#" aria-label="Invila home">
+        <div class="brand-mark">
+          <i data-lucide="droplets" aria-hidden="true"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">INVILA</span>
+          <span class="brand-tagline">Strategic Infrastructure Group</span>
+        </div>
+      </a>
+
+      <!-- Executive Navigation -->
+      <nav class="nav-desktop" aria-label="Primary navigation">
+        <a href="#drives-us" class="nav-link">Solutions</a>
+        <a href="#audit" class="nav-link">Intelligence</a>
+        <a href="#portfolio" class="nav-link">Portfolio</a>
+        <a href="#success-stories" class="nav-link">Impact</a>
+      </nav>
+
+      <!-- Executive Actions -->
+      <div class="header-actions">
+        <button class="btn-executive-secondary" onclick="document.getElementById('audit').scrollIntoView({behavior:'smooth'})">
+          <i data-lucide="calculator" aria-hidden="true" style="width:18px;height:18px;"></i>
+          Calculate Savings
+        </button>
+        <button class="btn-executive" onclick="alert('Executive briefing request - Coming soon')">
+          <i data-lucide="calendar" aria-hidden="true" style="width:18px;height:18px;"></i>
+          Request Briefing
+        </button>
+      </div>
+
+      <!-- Mobile Toggle -->
+      <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="primaryNavMobile">
+        <i data-lucide="menu" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <!-- Mobile Panel -->
+    <div class="nav-panel" id="primaryNavMobile" hidden>
+      <a href="#drives-us">Solutions</a>
+      <a href="#audit">Intelligence</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#success-stories">Impact</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============================
+         EXECUTIVE HERO
+         ============================ -->
+    <section class="hero" aria-label="Hero">
+      <div class="hero-bg">
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+      </div>
+
+      <div class="hero-grid">
+        <div class="hero-content reveal">
+          <div class="hero-eyebrow">Water-as-a-Service™</div>
+          
+          <h1>
+            Transforming Water Infrastructure Into <em>Strategic Value</em>
+          </h1>
+          
+          <p class="hero-subtitle">
+            Executive-grade water solutions that convert operational liabilities into competitive advantages. 
+            Zero capital expenditure. Maximum operational resilience.
+          </p>
+
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <span class="hero-stat-value">78.1M</span>
+              <span class="hero-stat-label">m³/Year Capacity</span>
+            </div>
+            <div class="hero-stat">
+              <span class="hero-stat-value">10+</span>
+              <span class="hero-stat-label">Years Stability</span>
+            </div>
+            <div class="hero-stat">
+              <span class="hero-stat-value">Zero</span>
+              <span class="hero-stat-label">CapEx Risk</span>
+            </div>
+          </div>
+
+          <div class="hero-ctas">
+            <button class="btn-executive" onclick="document.getElementById('audit').scrollIntoView({behavior:'smooth'})">
+              <i data-lucide="arrow-right" aria-hidden="true" style="width:18px;height:18px;"></i>
+              Explore ROI Calculator
+            </button>
+            <button class="btn-executive-secondary" onclick="document.getElementById('portfolio').scrollIntoView({behavior:'smooth'})">
+              View Case Studies
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal">
+          <div class="hero-card">
+            <div class="hero-card-header">
+              <span class="hero-card-title">Live System Metrics</span>
+              <span class="hero-card-badge">DECN-IV™ Active</span>
+            </div>
+            <div class="hero-metric">
+              <span class="hero-metric-value">2,512</span>
+              <span class="hero-metric-unit">LPS</span>
+            </div>
+            <div class="hero-metric-label">Total Instantaneous Flow Rate</div>
+            <div class="hero-chart"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee-wrap" aria-label="Strategic partners">
+      <div class="marquee-head container">
+        <p class="marquee-title">Trusted by Industry Leaders</p>
+        <button class="marquee-toggle" id="marqueeToggle" type="button">
+          <i data-lucide="pause" aria-hidden="true" style="width:14px;height:14px;"></i>
+          Pause
+        </button>
+      </div>
+      <div class="marquee" id="marquee">
+        <div class="marquee-track" id="marqueeList">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- DNA / ECONOMICS -->
+    <section id="drives-us" class="section" aria-label="Economics of water">
+      <div class="container">
+        <div class="dna-head reveal">
+          <h2>Economics of Water</h2>
+          <h3>From Operational Cost<br/>to Strategic Asset.</h3>
+        </div>
+
+        <div class="dna-grid">
+          <div class="reveal">
+            <!-- Abstract visual representation -->
+            <div style="aspect-ratio:1;background:linear-gradient(135deg,var(--surface-2) 0%,var(--surface) 100%);border-radius:var(--radius-lg);display:grid;place-items:center;border:1px solid var(--border);">
+              <div style="text-align:center;">
+                <i data-lucide="network" style="width:80px;height:80px;color:var(--accent);opacity:0.3;"></i>
+                <p style="margin-top:16px;color:var(--text-muted);font-size:14px;">Integrated Water Systems</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="dna-features reveal">
+            <div class="feature">
+              <div class="feature-icon"><i data-lucide="bar-chart-3"></i></div>
+              <div>
+                <h4>Capital Efficiency</h4>
+                <p>Convert CAPEX to OPEX with our Zero-CapEx WaaS model. Preserve liquidity while securing critical infrastructure.</p>
+              </div>
+            </div>
+            <div class="feature">
+              <div class="feature-icon"><i data-lucide="shield-check"></i></div>
+              <div>
+                <h4>Operational Resilience</h4>
+                <p>Redundant systems and predictive maintenance ensure 99.9% uptime for mission-critical operations.</p>
+              </div>
+            </div>
+            <div class="feature">
+              <div class="feature-icon"><i data-lucide="leaf"></i></div>
+              <div>
+                <h4>Regulatory Compliance</h4>
+                <p>Stay ahead of evolving environmental regulations with automated compliance reporting and real-time monitoring.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AUDIT / CALCULATOR -->
+    <section id="audit" class="section audit" aria-label="Audit calculator">
+      <div class="container">
+        <div class="reveal">
+          <h3>Executive Intelligence: <span>Savings Audit & Infrastructure Valuation</span></h3>
+          <p style="color:var(--dark-muted);margin-top:16px;max-width:600px;">
+            Real-time financial modeling for C-suite decision making. Calculate potential savings and infrastructure value in seconds.
+          </p>
+        </div>
+
+        <div class="audit-grid" style="display:grid;grid-template-columns:400px 1fr;gap:48px;margin-top:48px;align-items:start;">
+          <!-- Calculator Inputs -->
+          <div class="glass reveal" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-lg);padding:32px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+              <div style="width:48px;height:48px;background:var(--accent);border-radius:var(--radius-sm);display:grid;place-items:center;color:var(--primary);">
+                <i data-lucide="sliders" style="width:24px;height:24px;"></i>
+              </div>
+              <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:var(--dark-muted);margin:0;">Parameters</p>
+            </div>
+
+            <div class="field" style="margin-bottom:20px;">
+              <label style="display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--dark-muted);margin-bottom:8px;">Daily Flow Rate (m³)</label>
+              <input type="text" value="1,500" style="width:100%;padding:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);color:var(--text-invert);font-size:24px;font-weight:700;" />
+            </div>
+
+            <div class="field" style="margin-bottom:20px;">
+              <label style="display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--dark-muted);margin-bottom:8px;">Legacy Cost (Rp/m³)</label>
+              <input type="text" value="14,600" style="width:100%;padding:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);color:var(--text-invert);font-size:24px;font-weight:700;" />
+            </div>
+
+            <div class="field">
+              <label style="display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--dark-muted);margin-bottom:8px;">Invila Tariff (Rp/m³)</label>
+              <input type="text" value="5,500" style="width:100%;padding:16px;background:rgba(255,255,255,0.05);border:1px solid var(--accent);border-radius:var(--radius-sm);color:var(--accent);font-size:24px;font-weight:700;" />
+            </div>
+
+            <button class="btn-executive" style="width:100%;margin-top:24px;justify-content:center;">
+              <i data-lucide="refresh-cw" style="width:18px;height:18px;"></i>
+              Update Projection
+            </button>
+          </div>
+
+          <!-- Results -->
+          <div class="reveal">
+            <div style="background:linear-gradient(135deg,rgba(0,212,170,0.1) 0%,transparent 100%);border:1px solid rgba(0,212,170,0.2);border-radius:var(--radius-lg);padding:48px;margin-bottom:24px;">
+              <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:var(--accent);margin-bottom:16px;">Monthly Potential Savings</p>
+              <p style="font-size:clamp(48px,6vw,72px);font-weight:800;color:var(--text-invert);line-height:1;margin:0;">Rp 409.5 Juta</p>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+              <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-md);padding:24px;">
+                <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--dark-muted);margin-bottom:8px;">Annual Savings</p>
+                <p style="font-size:28px;font-weight:800;color:var(--text-invert);margin:0;">Rp 4.91 Miliar</p>
+              </div>
+              <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,107,107,0.3);border-radius:var(--radius-md);padding:24px;">
+                <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--rose);margin-bottom:8px;">5-Year Strategy Value</p>
+                <p style="font-size:28px;font-weight:800;color:var(--rose);margin:0;">Rp 24.57 Miliar</p>
+              </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(0,212,170,0.2);border-radius:var(--radius-lg);padding:32px;margin-top:24px;">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                <i data-lucide="zap" style="color:var(--accent);"></i>
+                <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:var(--accent);">Capex Valuation</span>
+              </div>
+              <p style="color:var(--dark-muted);margin-bottom:16px;">Estimated infrastructure value based on Rp 360 Juta/LPS industry standard:</p>
+              <p style="font-size:clamp(32px,4vw,48px);font-weight:800;color:var(--text-invert);margin:0;">Rp 10.46 Miliar</p>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.1);">
+                <span style="font-size:12px;font-weight:600;color:var(--accent);">Zero-CapEx Eligible</span>
+                <div style="display:flex;gap:8px;">
+                  <span style="width:8px;height:8px;background:var(--accent);border-radius:50%;"></span>
+                  <span style="width:8px;height:8px;background:rgba(255,255,255,0.2);border-radius:50%;"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PORTFOLIO -->
+    <section id="portfolio" class="section portfolio" aria-label="Portfolio dashboard">
+      <div class="container">
+        <div class="reveal">
+          <div class="stat-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;align-items:center;gap:16px;">
+                <i data-lucide="activity" style="color:var(--accent);width:32px;height:32px;"></i>
+                <div>
+                  <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:var(--dark-muted);margin:0;">Infrastructure Track Record</p>
+                  <p style="font-size:14px;color:var(--text-invert);margin:4px 0 0;">Real-time portfolio metrics</p>
+                </div>
+              </div>
+              <div class="stat-metrics">
+                <div class="metric">
+                  <p class="label">Instant Flow</p>
+                  <p class="val">2,512 <span style="font-size:16px;font-weight:500;opacity:0.6;">LPS</span></p>
+                </div>
+                <div class="metric">
+                  <p class="label">Monthly Volume</p>
+                  <p class="val">6.51M <span style="font-size:16px;font-weight:500;opacity:0.6;">m³</span></p>
+                </div>
+                <div class="metric">
+                  <p class="label">Annual Volume</p>
+                  <p class="val" style="color:var(--accent);">78.1 <span style="font-size:16px;font-weight:500;opacity:0.6;">M m³</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:16px;margin-top:48px;margin-bottom:24px;">
+          <h2 style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.25em;color:var(--text-muted);margin:0;">Project Portfolio</h2>
+          <div style="height:1px;background:var(--border);flex:1;"></div>
+          <button style="width:40px;height:40px;border:1px solid var(--border);background:var(--surface);border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--text-muted);">
+            <i data-lucide="rotate-cw" style="width:18px;height:18px;"></i>
+          </button>
+        </div>
+
+        <div class="projects" id="projectGrid">
+          <!-- Generated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SUCCESS STORIES -->
+    <section id="success-stories" class="section stories" aria-label="Success stories">
+      <div class="container">
+        <div class="reveal">
+          <h2>Featured Projects</h2>
+          <h3>Proven Performance at Scale.</h3>
+        </div>
+
+        <div class="story-grid">
+          <div class="story reveal">
+            <video autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=1000">
+              <source src="KIW 1.mp4" type="video/mp4" />
+            </video>
+            <h5>Scalable WaaS: KIW Semarang</h5>
+          </div>
+          <div class="story reveal">
+            <video autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=1000">
+              <source src="air minum kota medan.mp4" type="video/mp4" />
+            </video>
+            <h5>Air Minum Kota Medan (1,000 LPS)</h5>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ECOSYSTEM -->
+    <section class="section ecosystem" aria-label="Strategic ecosystem">
+      <div class="container" style="text-align:center;">
+        <div class="reveal">
+          <h2 style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.3em;color:var(--accent);margin-bottom:16px;">Strategic Ecosystem</h2>
+          <h3 style="font-size:clamp(32px,4vw,48px);font-weight:700;color:var(--primary);margin-bottom:48px;">Trusted by Industry Giants.</h3>
+        </div>
+        
+        <div class="logo-wall reveal" id="ecosystemGrid">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <p class="brandline">INVILA™</p>
+        <p>ENGINEERING BY INVILA ENGINEERING SYSTEMS</p>
+        <p style="font-size:12px;opacity:0.6;max-width:600px;margin:16px auto 0;">
+          Confidential & Strategic Information. Excluding Puskesmas and Hospital WWTP Population Data.
+        </p>
+        <p style="margin-top:32px;font-size:12px;">© 2026 Invila.asia | Strategic Infrastructure Group</p>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Data
+    const projects = [
+      { id: 1, name: "Clarifier 1 PDAM Tirtanadi Sunggal", category: "UPRATING", lps: 500, monthly: 1296000, yearly: 15552000, year: "2014" },
+      { id: 2, name: "Clarifier 6 PDAM Tirtanadi Sunggal", category: "BANGUN BARU", lps: 500, monthly: 1296000, yearly: 15552000, year: "2013" },
+      { id: 3, name: "WTP 300 LPS Tirta Asasta Legong", category: "UPRATING", lps: 300, monthly: 777600, yearly: 9331200, year: "2016" },
+      { id: 4, name: "WTP 300 LPS Tirta Asasta Citayam", category: "UPRATING", lps: 300, monthly: 777600, yearly: 9331200, year: "2016" },
+      { id: 5, name: "SPAM Gunung Sari - Petro Kimia Gresik", category: "BANGUN BARU", lps: 833.3, monthly: 2160000, yearly: 25920000, year: "2016" },
+      { id: 6, name: "SPAM I Kawasan Industri Wijayakusuma", category: "BANGUN BARU", lps: 50, monthly: 129600, yearly: 1555200, year: "2018" },
+    ];
+
+    const ecosystem = [
+      { name: "Wika", tag: "BUMN Infra" },
+      { name: "United Tractors", tag: "Energy" },
+      { name: "Petrokimia", tag: "Chemical" },
+      { name: "KIW", tag: "Industrial Zone" },
+      { name: "Tirtanadi", tag: "Public Utility" },
+      { name: "Tirta Asasta", tag: "Water Services" },
+      { name: "Kievit", tag: "Global Food" },
+      { name: "Patria", tag: "Maritime" },
+      { name: "CSK", tag: "Construction" },
+      { name: "Dinkes Depok", tag: "Health Sector" },
+    ];
+
+    // Render functions
+    function renderEcosystem(){
+      const grid = document.getElementById('ecosystemGrid');
+      const marquee = document.getElementById('marqueeList');
+      
+      const pills = ecosystem.map(item => `
+        <div class="logo-pill">
+          <div style="font-weight:700;color:var(--primary);font-size:16px;">${item.name}</div>
+          <span style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;">${item.tag}</span>
+        </div>
+      `).join('');
+      
+      grid.innerHTML = pills;
+      marquee.innerHTML = pills + pills;
+    }
+
+    function renderProjects(){
+      const grid = document.getElementById('projectGrid');
+      
+      grid.innerHTML = projects.map(p => {
+        const badgeClass = p.category === 'ZEROCAPEX' ? 'zero' : p.category === 'UPRATING' ? 'up' : 'new';
+        
+        return `
+          <article class="project">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <span class="badge-mini ${badgeClass}">${p.category}</span>
+              <span style="font-size:12px;color:var(--text-muted);font-weight:600;">EST. ${p.year}</span>
+            </div>
+            <h3 style="font-size:16px;font-weight:700;color:var(--primary);margin-bottom:16px;line-height:1.4;">${p.name}</h3>
+            <div style="padding:16px;background:var(--surface-2);border-radius:var(--radius-sm);">
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-size:12px;color:var(--text-muted);">Debit (LPS)</span>
+                <span style="font-weight:700;color:var(--primary);">${p.lps}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-size:12px;color:var(--text-muted);">Bulanan (m³)</span>
+                <span style="font-weight:700;">${p.monthly.toLocaleString('id-ID')}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;">
+                <span style="font-size:12px;color:var(--text-muted);">Tahunan (m³)</span>
+                <span style="font-weight:700;">${p.yearly.toLocaleString('id-ID')}</span>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // Header scroll effect
+    function initHeader(){
+      const header = document.getElementById('header');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          header.classList.add('header--scrolled');
+        } else {
+          header.classList.remove('header--scrolled');
+        }
+      }, { passive: true });
+    }
+
+    // Mobile nav
+    function initNav(){
+      const toggle = document.getElementById('navToggle');
+      const panel = document.getElementById('primaryNavMobile');
+      
+      toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!expanded));
+        panel.hidden = expanded;
+      });
+    }
+
+    // Marquee control
+    function initMarquee(){
+      const marquee = document.getElementById('marquee');
+      const toggle = document.getElementById('marqueeToggle');
+      
+      toggle.addEventListener('click', () => {
+        const isPaused = marquee.style.animationPlayState === 'paused';
+        marquee.style.animationPlayState = isPaused ? 'running' : 'paused';
+        toggle.innerHTML = isPaused 
+          ? '<i data-lucide="pause" style="width:14px;height:14px;"></i> Pause'
+          : '<i data-lucide="play" style="width:14px;height:14px;"></i> Resume';
+        lucide.createIcons();
+      });
+    }
+
+    // Reveal animations
+    function initReveal(){
+      const items = document.querySelectorAll('.reveal');
+      
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-visible');
+              io.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0.1 });
+        
+        items.forEach(el => io.observe(el));
+      } else {
+        items.forEach(el => el.classList.add('is-visible'));
+      }
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      renderEcosystem();
+      renderProjects();
+      initHeader();
+      initNav();
+      initMarquee();
+      initReveal();
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
